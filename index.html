@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectra SpaceHub - Творческая платформа</title>
+    <link rel="icon" href="src/Spectra SpaceHub.jpg" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Стили для техподдержки */
+        .support-section {
+            padding: 20px;
+        }
+        
+        .support-ticket {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .ticket-status {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .status-open {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .status-closed {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .ticket-content {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .ticket-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background-color: var(--accent);
+            margin-left: auto;
+        }
+        
+        .support-message {
+            background-color: var(--card-hover);
+            margin-right: auto;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .ticket-reply {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ticket-reply input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+        
+        .new-ticket-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .new-ticket-form {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo" id="goHome">
+                <span class="logo-icon"><i class="fas fa-rocket"></i></span>
+                <span>Spectra SpaceHub</span>
+            </div>
+            
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Поиск приложений и файлов..." id="searchInput">
+            </div>
+            
+            <div class="user-actions">
+                <div class="icon" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="user-profile" id="profileBtn">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+        
+        <aside class="sidebar">
+            <div class="nav-section">
+                <div class="nav-title">Главное</div>
+                <div class="nav-item active" data-section="home">
+                    <span class="nav-icon"><i class="fas fa-home"></i></span>
+                    <span>Главная</span>
+                </div>
+                <div class="nav-item" data-section="apps">
+                    <span class="nav-icon"><i class="fas fa-th-large"></i></span>
+                    <span>Все приложения</span>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Категории</div>
+                <div class="nav-item" data-category="design">
+                    <span class="nav-icon"><i class="fas fa-paint-brush"></i></span>
+                    <span>Графика & Дизайн</span>
+                </div>
+                <div class="nav-item" data-category="video">
+                    <span class="nav-icon"><i class="fas fa-video"></i></span>
+                    <span>Видео & Монтаж</span>
+                </div>
+                <div class="nav-item" data-category="development">
+                    <span class="nav-icon"><i class="fas fa-code"></i></span>
+                    <span>Разработка</span>
+                </div>
+                <div class="nav-item" data-category="audio">
+                    <span class="nav-icon"><i class="fas fa-music"></i></span>
+                    <span>Аудио & Музыка</span>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Дополнительно</div>
+                <div class="nav-item" data-section="updates">
+                    <span class="nav-icon"><i class="fas fa-cloud-download-alt"></i></span>
+                    <span>Обновления</span>
+                </div>
+                <div class="nav-item" data-section="help">
+                    <span class="nav-icon"><i class="fas fa-question-circle"></i></span>
+                    <span>Помощь</span>
+                </div>
+                <div class="nav-item" data-section="settings">
+                    <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                    <span>Настройки</span>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <!-- Главная страница -->
+            <div class="content-section active" id="home-section">
+                <div class="section-header">
+                    <h1 class="section-title">Мои приложения</h1>
+                    <div class="view-all" id="viewAllApps">
+                        Все приложения <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="apps-grid">
+                    <div class="app-card" data-app="photo">
+                        <div class="app-icon">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3 class="app-name">Spectra Imageline</h3>
+                        <p class="app-desc">Редактор фотографий и растровой графики</p>
+                        <span class="app-badge">Популярное</span>
+                    </div>
+                    
+                    <div class="app-card" data-app="vector">
+                        <div class="app-icon">
+                            <i class="fas fa-vector-square"></i>
+                        </div>
+                        <h3 class="app-name">Spectra VectorInline</h3>
+                        <p class="app-desc">Создание векторной графики и иллюстраций</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="video">
+                        <div class="app-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3 class="app-name">Luminance</h3>
+                        <p class="app-desc">Профессиональный видеомонтаж и эффекты</p>
+                        <span class="app-badge">Новое</span>
+                    </div>
+                    
+                    <div class="app-card" data-app="code">
+                        <div class="app-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="app-name">WebDesign</h3>
+                        <p class="app-desc">Редактор кода и веб-разработка</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Все приложения -->
+            <div class="content-section" id="apps-section">
+                <div class="section-header">
+                    <h1 class="section-title">Все приложения</h1>
+                </div>
+                
+                <div class="apps-grid">
+                    <div class="app-card" data-app="photo">
+                        <div class="app-icon">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3 class="app-name">Spectra Imageline</h3>
+                        <p class="app-desc">Редактор фотографий и растровой графики</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="vector">
+                        <div class="app-icon">
+                            <i class="fas fa-vector-square"></i>
+                        </div>
+                        <h3 class="app-name">Spectra VectorInline</h3>
+                        <p class="app-desc">Создание векторной графики и иллюстраций</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="video">
+                        <div class="app-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3 class="app-name">Luminance</h3>
+                        <p class="app-desc">Профессиональный видеомонтаж и эффекты</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="code">
+                        <div class="app-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="app-name">WebDesign</h3>
+                        <p class="app-desc">Редактор кода и веб-разработка</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="audio">
+                        <div class="app-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h3 class="app-name">Spectra SStidio</h3>
+                        <p class="app-desc">Создание и редактирование аудио</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="3d">
+                        <div class="app-icon">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <h3 class="app-name">Spectra ObjectiveShape</h3>
+                        <p class="app-desc">3D моделирование и визуализация</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="effects">
+                        <div class="app-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h3 class="app-name">Flux Infinite</h3>
+                        <p class="app-desc">Создание визуальных эффектов и анимации</p>
+                    </div>
+                    
+                    <div class="app-card" data-app="ui">
+                        <div class="app-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <h3 class="app-name">UI Designer</h3>
+                        <p class="app-desc">Проектирование интерфейсов и прототипов</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Обновления -->
+            <div class="content-section" id="updates-section">
+                <div class="section-header">
+                    <h1 class="section-title">Обновления</h1>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-paintbrush"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Spectra Imageline v.SIMG-2025.09.01</div>
+                        <div class="notification-desc">РЕЛИЗ</div>
+                        <div class="notification-time">2025.09.01</div>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">WebDesign v.WDS-2025.09.01</div>
+                        <div class="notification-desc">РЕЛИЗ</div>
+                        <div class="notification-time">2025.09.01</div>
+                    </div>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">SpectraBoocks v.SB-2025.09.01</div>
+                        <div class="notification-desc">РЕЛИЗ</div>
+                        <div class="notification-time">2025.09.01</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Настройки -->
+            <div class="content-section" id="settings-section">
+                <div class="section-header">
+                    <h1 class="section-title">Настройки</h1>
+                </div>
+                
+                <div class="settings-panel">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Темная тема</div>
+                            <div class="setting-desc">Включить темный режим интерфейса</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Автообновления</div>
+                            <div class="setting-desc">Автоматически проверять обновления приложений</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Уведомления</div>
+                            <div class="setting-desc">Получать уведомления о новых функциях</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Синхронизация</div>
+                            <div class="setting-desc">Синхронизировать настройки между устройствами</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Техподдержка -->
+            <div class="content-section" id="support-section">
+                <div class="section-header">
+                    <h1 class="section-title">Техподдержка</h1>
+                </div>
+                
+                <div class="support-section">
+                    <button class="new-ticket-btn" id="newTicketBtn">
+                        <i class="fas fa-plus"></i> Создать новый запрос
+                    </button>
+                    
+                    <div class="new-ticket-form" id="newTicketForm">
+                        <h3>Новый запрос в поддержку</h3>
+                        <div class="form-group">
+                            <label for="ticketSubject">Тема</label>
+                            <input type="text" id="ticketSubject" placeholder="Кратко опишите проблему">
+                        </div>
+                        <div class="form-group">
+                            <label for="ticketCategory">Категория</label>
+                            <select id="ticketCategory">
+                                <option value="technical">Техническая проблема</option>
+                                <option value="billing">Платежи и биллинг</option>
+                                <option value="account">Аккаунт</option>
+                                <option value="feature">Предложение функционала</option>
+                                <option value="other">Другое</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ticketMessage">Сообщение</label>
+                            <textarea id="ticketMessage" placeholder="Подробно опишите вашу проблему или вопрос"></textarea>
+                        </div>
+                        <div class="form-buttons">
+                            <button class="modal-btn btn-secondary" id="cancelTicket">Отмена</button>
+                            <button class="modal-btn btn-primary" id="submitTicket">Отправить</button>
+                        </div>
+                    </div>
+                    
+                    <h3>Мои запросы</h3>
+                    <div class="support-tickets" id="supportTickets">
+                        <!-- Тикеты будут добавляться здесь через JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <div>Spectra SpaceHub v2.5.1</div>
+            <div class="footer-links">
+                <a id="helpLink">Помощь</a>
+                <a id="supportLink">Поддержка</a>
+                <a id="communityLink">Сообщество</a>
+            </div>
+            <div>© 2025 Spectra Inc.</div>
+        </footer>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal" id="appModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title" id="modalAppName">Запуск приложения</h2>
+            <p id="modalAppDesc">Вы уверены, что хотите запустить это приложение?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-secondary" id="cancelLaunch">Отмена</button>
+                <button class="modal-btn btn-primary" id="confirmLaunch">Запустить</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // ===== КОД ДЛЯ ТЕХПОДДЕРЖКИ =====
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Элементы техподдержки
+            const newTicketBtn = document.getElementById('newTicketBtn');
+            const newTicketForm = document.getElementById('newTicketForm');
+            const cancelTicket = document.getElementById('cancelTicket');
+            const submitTicket = document.getElementById('submitTicket');
+            const supportTickets = document.getElementById('supportTickets');
+            
+            // Показать форму нового тикета
+            newTicketBtn.addEventListener('click', function() {
+                newTicketForm.style.display = 'block';
+                newTicketBtn.style.display = 'none';
+            });
+            
+            // Скрыть форму нового тикета
+            cancelTicket.addEventListener('click', function() {
+                newTicketForm.style.display = 'none';
+                newTicketBtn.style.display = 'flex';
+            });
+            
+            // Отправить новый тикет
+            submitTicket.addEventListener('click', function() {
+                const subject = document.getElementById('ticketSubject').value;
+                const category = document.getElementById('ticketCategory').value;
+                const message = document.getElementById('ticketMessage').value;
+                
+                if (!subject || !message) {
+                    showNotification('Заполните все обязательные поля', 'error');
+                    return;
+                }
+                
+                // В реальном приложении здесь будет отправка на сервер
+                const ticketId = Date.now();
+                createTicket(ticketId, subject, category, message);
+                
+                // Очистить форму
+                document.getElementById('ticketSubject').value = '';
+                document.getElementById('ticketMessage').value = '';
+                newTicketForm.style.display = 'none';
+                newTicketBtn.style.display = 'flex';
+                
+                showNotification('Запрос в поддержку создан');
+            });
+            
+            // Загрузка тикетов при открытии раздела
+            const supportSection = document.getElementById('support-section');
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (supportSection.classList.contains('active')) {
+                        loadTickets();
+                    }
+                });
+            });
+            
+            observer.observe(supportSection, { attributes: true });
+            
+            // Функция загрузки тикетов
+            function loadTickets() {
+                // В реальном приложении здесь будет запрос к серверу
+                // Для демонстрации используем локальное хранилище
+                const tickets = JSON.parse(localStorage.getItem('supportTickets')) || [];
+                
+                supportTickets.innerHTML = '';
+                
+                if (tickets.length === 0) {
+                    supportTickets.innerHTML = '<p>У вас пока нет запросов в поддержку</p>';
+                    return;
+                }
+                
+                tickets.forEach(ticket => {
+                    const ticketElement = createTicketElement(ticket);
+                    supportTickets.appendChild(ticketElement);
+                });
+            }
+            
+            // Функция создания тикета
+            function createTicket(id, subject, category, message) {
+                const ticket = {
+                    id: id,
+                    subject: subject,
+                    category: category,
+                    status: 'open',
+                    messages: [
+                        {
+                            text: message,
+                            sender: 'user',
+                            time: new Date().toISOString()
+                        }
+                    ],
+                    created: new Date().toISOString(),
+                    updated: new Date().toISOString()
+                };
+                
+                // Сохраняем в локальное хранилище (в реальном приложении - отправляем на сервер)
+                const tickets = JSON.parse(localStorage.getItem('supportTickets')) || [];
+                tickets.unshift(ticket);
+                localStorage.setItem('supportTickets', JSON.stringify(tickets));
+                
+                // Добавляем на страницу
+                const ticketElement = createTicketElement(ticket);
+                supportTickets.insertBefore(ticketElement, supportTickets.firstChild);
+                
+                // В реальном приложении здесь будет отправка в Telegram
+                sendToTelegram(ticket);
+            }
+            
+            // Функция создания элемента тикета
+            function createTicketElement(ticket) {
+                const ticketElement = document.createElement('div');
+                ticketElement.className = 'support-ticket';
+                ticketElement.dataset.id = ticket.id;
+                
+                const statusClass = `status-${ticket.status}`;
+                
+                ticketElement.innerHTML = `
+                    <div class="ticket-header">
+                        <div class="ticket-subject">${ticket.subject}</div>
+                        <div class="ticket-status ${statusClass}">${getStatusText(ticket.status)}</div>
+                    </div>
+                    <div class="ticket-info">
+                        <span>${formatDate(ticket.created)}</span>
+                        <span>•</span>
+                        <span>${getCategoryText(ticket.category)}</span>
+                    </div>
+                    <div class="ticket-content" id="ticket-${ticket.id}">
+                        <div class="ticket-messages">
+                            ${renderMessages(ticket.messages)}
+                        </div>
+                        <div class="ticket-reply">
+                            <input type="text" placeholder="Введите ваш ответ..." id="reply-${ticket.id}">
+                            <button class="modal-btn btn-primary send-reply" data-id="${ticket.id}">Отправить</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Обработчик клика по тикету
+                ticketElement.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('send-reply')) {
+                        const content = this.querySelector('.ticket-content');
+                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                    }
+                });
+                
+                // Обработчик отправки ответа
+                const sendBtn = ticketElement.querySelector('.send-reply');
+                sendBtn.addEventListener('click', function() {
+                    const ticketId = this.dataset.id;
+                    const replyInput = document.getElementById(`reply-${ticketId}`);
+                    const replyText = replyInput.value.trim();
+                    
+                    if (!replyText) return;
+                    
+                    // Добавляем сообщение
+                    addMessageToTicket(ticketId, replyText, 'user');
+                    
+                    // Очищаем поле ввода
+                    replyInput.value = '';
+                    
+                    // Прокручиваем к последнему сообщению
+                    const messagesContainer = ticketElement.querySelector('.ticket-messages');
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    
+                    // В реальном приложении здесь будет отправка в Telegram
+                    sendReplyToTelegram(ticketId, replyText);
+                });
+                
+                return ticketElement;
+            }
+            
+            // Функция добавления сообщения в тикет
+            function addMessageToTicket(ticketId, text, sender) {
+                const tickets = JSON.parse(localStorage.getItem('supportTickets')) || [];
+                const ticketIndex = tickets.findIndex(t => t.id == ticketId);
+                
+                if (ticketIndex !== -1) {
+                    tickets[ticketIndex].messages.push({
+                        text: text,
+                        sender: sender,
+                        time: new Date().toISOString()
+                    });
+                    
+                    tickets[ticketIndex].updated = new Date().toISOString();
+                    localStorage.setItem('supportTickets', JSON.stringify(tickets));
+                    
+                    // Обновляем отображение
+                    const messagesContainer = document.querySelector(`#ticket-${ticketId} .ticket-messages`);
+                    if (messagesContainer) {
+                        messagesContainer.innerHTML = renderMessages(tickets[ticketIndex].messages);
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                }
+            }
+            
+            // Функция рендеринга сообщений
+            function renderMessages(messages) {
+                return messages.map(msg => {
+                    const messageClass = msg.sender === 'user' ? 'user-message' : 'support-message';
+                    return `
+                        <div class="message ${messageClass}">
+                            <div>${msg.text}</div>
+                            <div class="message-time">${formatTime(msg.time)}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Вспомогательные функции
+            function getStatusText(status) {
+                const statuses = {
+                    'open': 'Открыт',
+                    'pending': 'В обработке',
+                    'closed': 'Закрыт'
+                };
+                return statuses[status] || status;
+            }
+            
+            function getCategoryText(category) {
+                const categories = {
+                    'technical': 'Техническая проблема',
+                    'billing': 'Платежи и биллинг',
+                    'account': 'Аккаунт',
+                    'feature': 'Предложение функционала',
+                    'other': 'Другое'
+                };
+                return categories[category] || category;
+            }
+            
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('ru-RU');
+            }
+            
+            function formatTime(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            // Функции для интеграции с Telegram (заглушки)
+            function sendToTelegram(ticket) {
+                console.log('Отправка в Telegram:', ticket);
+                // Реальная реализация будет использовать Telegram Bot API
+                // Пример: fetch(`https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage?chat_id=<YOUR_CHAT_ID>&text=Новый тикет: ${ticket.subject}`)
+            }
+            
+            function sendReplyToTelegram(ticketId, message) {
+                console.log('Отправка ответа в Telegram:', ticketId, message);
+                // Реальная реализация будет использовать Telegram Bot API
+            }
+        });
+    </script>
+</body>
+</html>
